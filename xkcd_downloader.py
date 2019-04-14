@@ -74,7 +74,7 @@ class xkcd_downloader:
                  afont='xkcd.ttf'):
 
         try:
-            img = Image.open(image)
+            img = Image.open(image).convert("RGBA")
         except OSError:
             return
 
@@ -93,6 +93,14 @@ class xkcd_downloader:
         old_h = h
         draw = ImageDraw.Draw(img)
         lheight_total = line_padding
+
+        # draw black rectangle behind title
+        rHeight = 0;
+        for i in lines:
+            rHeight += lheight + line_padding
+        draw.rectangle(((0, 0), (w,rHeight + line_padding*4)), fill="black")
+        
+        # draw title text
         for i in lines:
             draw.text((w/2-tfont.getsize(" ".join(i))[0]/2,
                       lheight_total),
@@ -109,6 +117,14 @@ class xkcd_downloader:
         img = img.crop(alt_crop)
         draw = ImageDraw.Draw(img)
         lheight_total = old_h + line_padding
+        
+        # draw black rectangle behind alt text
+        rHeight = 0;
+        for i in lines:
+            rHeight += lheight + line_padding
+        draw.rectangle(((0, h+rHeight+line_padding*2), (w, h)), fill="black")
+
+        # draw alt text
         for i in lines:
             if not i:
                 continue
